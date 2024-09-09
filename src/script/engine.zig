@@ -5,6 +5,7 @@ const StackError = @import("stack.zig").StackError;
 const Script = @import("lib.zig").Script;
 const ScriptFlags = @import("lib.zig").ScriptFlags;
 const arithmetic = @import("opcodes/arithmetic.zig");
+const constants = @import("opcodes/constants.zig");
 
 /// Errors that can occur during script execution
 pub const EngineError = error{
@@ -103,7 +104,8 @@ pub const Engine = struct {
     fn executeOpcode(self: *Engine, opcode: u8) !void {
         self.log("Executing opcode: 0x{x:0>2}\n", .{opcode});
         switch (opcode) {
-            0x00...0x4b => try self.pushData(opcode),
+            0x00 => try constants.opFalse(self),
+            0x01...0x4b => try self.pushData(opcode),
             0x4c => try self.opPushData1(),
             0x4d => try self.opPushData2(),
             0x4e => try self.opPushData4(),

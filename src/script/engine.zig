@@ -5,7 +5,6 @@ const StackError = @import("stack.zig").StackError;
 const Script = @import("lib.zig").Script;
 const ScriptFlags = @import("lib.zig").ScriptFlags;
 const arithmetic = @import("opcodes/arithmetic.zig");
-const flow = @import("opcodes/flow.zig");
 
 /// Errors that can occur during script execution
 pub const EngineError = error{
@@ -114,8 +113,7 @@ pub const Engine = struct {
             0x51...0x60 => try self.opN(opcode),
             0x61 => try self.opNop(),
             0x62 => try self.opVer(),
-            0x63 => try flow.opIf(self),
-            0x65...0x66 => try self.opReserved(self),
+            0x65...0x66 => try self.opReserved(opcode),
             0x69 => try self.opVerify(),
             0x6a => try self.opReturn(),
             0x6d => try self.op2Drop(),
@@ -224,12 +222,6 @@ pub const Engine = struct {
         // Do nothing
         _ = self;
     }
-
-    /// OP_VER: Reserved Opcode
-    fn opVer(self: *Engine) !void {
-        try self.opReserved(0x62);
-    }
-
 
     /// OP_VERIFY: Verify the top stack value
     ///
